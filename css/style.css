@@ -1,0 +1,490 @@
+/* ============================================================
+   林间 · 站点样式
+   所有的颜色、字号、间距、圆角一律通过 :root 设计令牌定义。
+   ============================================================ */
+
+:root {
+  /* 色彩：纸白底 + 近黑墨色 + 唯一强调色（朱砂） */
+  --paper: #faf7f1;
+  --ink: #2c2925;
+  --ink-soft: #6e675e;
+  --ink-faint: #a59c8f;
+  --accent: #a2452c;
+  --accent-wash: rgba(162, 69, 44, 0.09);
+  --line: #e6dfd2;
+  --code-bg: #f0ebe1;
+  --quote-bg: #f3eee4;
+  --card: #ffffff;
+
+  /* 字体 */
+  --font-serif: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "STSong", serif;
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Consolas", "PingFang SC", monospace;
+
+  /* 字号 */
+  --size-body: 17px;
+  --size-small: 13px;
+  --size-meta: 14px;
+
+  /* 间距与圆角 */
+  --space-unit: 1.25rem;
+  --radius: 8px;
+  --radius-sm: 4px;
+
+  /* 版心 */
+  --measure: 38em;
+}
+
+/* ---------- 基础 ---------- */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: var(--size-body);
+  line-height: 1.8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--accent-wash); color: var(--accent); }
+
+/* ---------- 导航 ---------- */
+
+.site-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.site-nav {
+  max-width: 52em;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 1.1rem;
+  padding-bottom: 1.1rem;
+}
+
+.site-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.6em;
+  font-family: var(--font-sans);
+  font-size: var(--size-meta);
+  color: var(--ink-soft);
+}
+
+.nav-links a {
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-links a:hover { color: var(--accent); }
+
+.nav-links a.active {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* ---------- 首页 ---------- */
+
+main { flex: 1; }
+
+.hero {
+  padding: 4.5rem 0 3.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-name {
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  margin-bottom: 0.9rem;
+}
+
+.hero-intro {
+  color: var(--ink-soft);
+  margin-bottom: 1.4rem;
+}
+
+.hero-about {
+  font-family: var(--font-sans);
+  font-size: var(--size-meta);
+  color: var(--accent);
+}
+
+.hero-about:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.section-heading {
+  font-family: var(--font-sans);
+  font-size: var(--size-small);
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 2.8rem 0 1.2rem;
+}
+
+/* 文章列表 */
+.post-list { list-style: none; }
+
+.post-item { border-bottom: 1px solid var(--line); }
+
+.post-link {
+  display: block;
+  padding: 1.15rem 0.2rem;
+}
+
+.post-title {
+  font-size: 1.18rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  /* 细节：链接下划线动画 */
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  transition: background-size 0.35s ease;
+  display: inline-block;
+}
+
+.post-link:hover .post-title { background-size: 100% 1px; }
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  font-family: var(--font-sans);
+  font-size: var(--size-meta);
+  color: var(--ink-faint);
+}
+
+.all-posts {
+  display: inline-block;
+  margin: 1.6rem 0 3.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--size-meta);
+  color: var(--accent);
+}
+
+.all-posts:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* 细节：首页入场渐显 */
+.fade-in { animation: fadeUp 0.7s ease both; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in { animation: none; }
+}
+
+/* 分类标签 */
+.tag {
+  font-family: var(--font-sans);
+  font-size: var(--size-small);
+  line-height: 1;
+  color: var(--accent);
+  background: var(--accent-wash);
+  padding: 0.3em 0.7em;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s, color 0.2s;
+}
+
+.post-link:hover .tag { background: var(--accent); color: var(--paper); }
+
+/* ---------- 列表页（archives） ---------- */
+
+.page-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 3rem 0 1.5rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-bottom: 1.4rem;
+}
+
+.filter-btn {
+  font-family: var(--font-sans);
+  font-size: var(--size-meta);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35em 1.1em;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.filter-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* ---------- 关于页 ---------- */
+
+.contact-box {
+  background: var(--quote-bg);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.4rem;
+  margin: 1rem 0 3rem;
+}
+
+.contact-box ul { list-style: none; }
+
+.contact-box li { margin-bottom: 0.4em; }
+
+.contact-box li:last-child { margin-bottom: 0; }
+
+.contact-box a {
+  color: var(--accent);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.contact-box a:hover { border-bottom-color: var(--accent); }
+
+/* ---------- 文章详情页 ---------- */
+
+.back-link {
+  display: inline-block;
+  margin: 2.4rem 0 2.2rem;
+  font-family: var(--font-sans);
+  font-size: var(--size-meta);
+  color: var(--ink-soft);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.back-link:hover { color: var(--accent); transform: translateX(-3px); }
+
+.post-header { margin-bottom: 2.6rem; }
+
+.post-heading {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+/* 正文排版 */
+.post-body { padding-bottom: 3rem; }
+
+.post-body p { margin-bottom: 1.35em; }
+
+.post-body h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 2.4em 0 1em;
+  letter-spacing: 0.05em;
+}
+
+.post-body h2::before {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.85;
+  margin-right: 0.5em;
+  vertical-align: 0.08em;
+}
+
+.post-body h3 {
+  font-size: 1.12rem;
+  font-weight: 700;
+  margin: 2em 0 0.8em;
+  color: var(--ink-soft);
+}
+
+.post-body a {
+  color: var(--accent);
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size 0.25s ease;
+}
+
+.post-body a:hover { background-size: 0 1px; }
+
+/* 代码块：浅色底 + 等宽字体 */
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--code-bg);
+  border-radius: var(--radius-sm);
+  padding: 0.15em 0.4em;
+}
+
+.post-body pre {
+  background: var(--code-bg);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.3rem;
+  margin: 1.6em 0 1.8em;
+  overflow-x: auto;
+  line-height: 1.7;
+}
+
+.post-body pre code {
+  background: none;
+  padding: 0;
+  font-size: var(--size-meta);
+}
+
+/* 引用块：左竖线 + 淡色背景 */
+.post-body blockquote {
+  background: var(--quote-bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.9rem 1.3rem;
+  margin: 1.6em 0 1.8em;
+}
+
+.post-body blockquote p { margin-bottom: 0.4em; color: var(--ink-soft); }
+
+.post-body blockquote p:last-child { margin-bottom: 0; }
+
+/* 图片：圆角、限宽、居中、图注 */
+.post-body figure {
+  margin: 2em auto;
+  max-width: 34em;
+  text-align: center;
+}
+
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  display: block;
+  margin: 0 auto;
+}
+
+.post-body figcaption {
+  font-family: var(--font-sans);
+  font-size: var(--size-small);
+  color: var(--ink-faint);
+  margin-top: 0.7em;
+}
+
+/* ---------- 上一篇 / 下一篇 ---------- */
+
+.prev-next {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.8rem;
+  margin-bottom: 3.5rem;
+}
+
+.pn-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  padding: 0.9rem 1.1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.pn-link:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.pn-prev { align-items: flex-start; }
+
+.pn-next { align-items: flex-end; text-align: right; }
+
+.pn-label {
+  font-family: var(--font-sans);
+  font-size: var(--size-small);
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+
+.pn-title { font-weight: 600; }
+
+/* ---------- 诗歌分类的版式差异：更宽松的行距 ---------- */
+
+.post-poetry .post-body {
+  line-height: 2.3;
+}
+
+.post-poetry .post-body p { margin-bottom: 1.7em; }
+
+.post-poetry .post-heading {
+  font-weight: 400;
+  letter-spacing: 0.15em;
+}
+
+/* ---------- 页脚 ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: 1.6rem 0;
+  font-family: var(--font-sans);
+  font-size: var(--size-small);
+  color: var(--ink-faint);
+}
+
+/* ---------- 响应式（375px 可用，无横向滚动） ---------- */
+
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+
+  .site-nav {
+    max-width: var(--measure);
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .site-name { font-size: 1.1rem; letter-spacing: 0.25em; }
+
+  .nav-links { gap: 1.1em; }
+
+  .hero { padding: 3rem 0 2.5rem; }
+
+  .hero-name { font-size: 1.9rem; }
+
+  .page-title { padding-top: 2.2rem; font-size: 1.45rem; }
+
+  .post-heading { font-size: 1.5rem; }
+
+  .post-body { font-size: 1.02rem; }
+
+  .post-body pre { padding: 0.9rem 1rem; }
+}

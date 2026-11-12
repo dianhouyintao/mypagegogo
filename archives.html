@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文章 · 林间</title>
+<meta name="description" content="读书，写诗，把日子过成慢火的文章。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="">
+<header class="site-header">
+  <nav class="site-nav wrap">
+    <a class="site-name" href="index.html">林间</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="archives.html" class="active" aria-current="page">文章</a>
+      <a href="about.html">关于</a>
+    </div>
+  </nav>
+</header>
+<main class="wrap">
+<h1 class="page-title">全部文章</h1>
+<div class="filters" role="group" aria-label="分类筛选">
+    <button class="filter-btn active" data-filter="全部">全部</button>
+    <button class="filter-btn" data-filter="阅读">阅读</button>
+    <button class="filter-btn" data-filter="诗歌">诗歌</button>
+    <button class="filter-btn" data-filter="随笔">随笔</button>
+</div>
+<ul class="post-list" id="archive-list">
+  <li class="post-item" data-category="随笔">
+  <a class="post-link" href="posts/night-river.html">
+    <h2 class="post-title">夜里的河</h2>
+    <div class="post-meta"><time datetime="2026-11-08">2026 年 11 月 8 日</time><span class="tag tag-cat-essay">随笔</span></div>
+  </a>
+</li>
+<li class="post-item" data-category="阅读">
+  <a class="post-link" href="posts/rereading-notes.html">
+    <h2 class="post-title">重读《瓦尔登湖》：把日子过成减法</h2>
+    <div class="post-meta"><time datetime="2026-11-05">2026 年 11 月 5 日</time><span class="tag tag-cat-reading">阅读</span></div>
+  </a>
+</li>
+<li class="post-item" data-category="诗歌">
+  <a class="post-link" href="posts/winter-begins.html">
+    <h2 class="post-title">立冬</h2>
+    <div class="post-meta"><time datetime="2026-11-01">2026 年 11 月 1 日</time><span class="tag tag-cat-poetry">诗歌</span></div>
+  </a>
+</li>
+</ul><script>
+(function () {
+  var btns = document.querySelectorAll('.filter-btn');
+  var items = document.querySelectorAll('#archive-list .post-item');
+  btns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var f = btn.getAttribute('data-filter');
+      items.forEach(function (it) {
+        it.hidden = (f !== '全部') && it.getAttribute('data-category') !== f;
+      });
+    });
+  });
+})();
+</script>
+</main>
+<footer class="site-footer">
+  <div class="wrap">© 2026 林间 · 用文字记下经过的日子</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="雾中远山的简笔插画">
+  <rect width="800" height="500" fill="#f3eee4"/>
+  <path d="M0 340 Q140 240 280 320 T560 300 T800 330 V500 H0 Z" fill="#d8cfbe" opacity="0.7"/>
+  <path d="M0 390 Q180 300 360 380 T800 370 V500 H0 Z" fill="#b8ac96" opacity="0.6"/>
+  <path d="M0 440 Q220 370 440 430 T800 420 V500 H0 Z" fill="#8f8370" opacity="0.5"/>
+  <ellipse cx="400" cy="300" rx="360" ry="26" fill="#faf7f1" opacity="0.75"/>
+  <ellipse cx="240" cy="360" rx="280" ry="20" fill="#faf7f1" opacity="0.6"/>
+  <circle cx="640" cy="120" r="42" fill="#a2452c" opacity="0.18"/>
+</svg>
