@@ -14,12 +14,14 @@ const path = require('path');
 
 // 分类集中定义于这一处：新增分类只需往数组加名字，
 // 并在 CATEGORY_CLASS 里补一个对应的样式类名（用于 CSS 微调）。
-const CATEGORIES = ['阅读', '诗歌', '随笔'];
+const CATEGORIES = ['阅读', '写作', '随笔', '诗歌', 'AI'];
 
 const CATEGORY_CLASS = {
   '阅读': 'cat-reading',
-  '诗歌': 'cat-poetry',
+  '写作': 'cat-writing',
   '随笔': 'cat-essay',
+  '诗歌': 'cat-poetry',
+  'AI': 'cat-ai',
 };
 
 const SITE = {
@@ -88,8 +90,8 @@ function renderMarkdown(md) {
       continue;
     }
 
-    // 标题（## → h2，### → h3）
-    const h = line.match(/^(#{2,3})\s+(.*)$/);
+    // 标题（# → h1，## → h2，### → h3）
+    const h = line.match(/^(#{1,3})\s+(.*)$/);
     if (h) {
       out.push(`<h${h[1].length}>${renderInline(h[2])}</h${h[1].length}>`);
       i++;
@@ -131,6 +133,7 @@ function renderMarkdown(md) {
            !/^!\[[^\]]*\]\([^)]+\)$/.test(lines[i].trim())) {
       para.push(lines[i++]);
     }
+    if (!para.length) para.push(lines[i++]); // 兜底：避免无法归类的行导致死循环
     out.push(`<p>${renderInline(para.join('\n')).replace(/\n/g, '<br>')}</p>`);
   }
   return out.join('\n');
@@ -175,8 +178,9 @@ ${body}
 function postListItem(p, root = '') {
   return `<li class="post-item" data-category="${escapeHtml(p.category)}">
   <a class="post-link" href="${root}posts/${p.slug}.html">
-    <h2 class="post-title">${escapeHtml(p.title)}</h2>
-    <div class="post-meta"><time datetime="${p.date}">${formatDate(p.date)}</time><span class="tag tag-${CATEGORY_CLASS[p.category] || ''}">${escapeHtml(p.category)}</span></div>
+    <time class="post-date" datetime="${p.date}">${p.date}</time>
+    <span class="post-title">${escapeHtml(p.title)}</span>
+    <span class="tag">${escapeHtml(p.category)}</span>
   </a>
 </li>`;
 }
@@ -204,17 +208,32 @@ function buildArchives(posts) {
   const filters = ['全部', ...CATEGORIES]
     .map((c, idx) => `<button class="filter-btn${idx === 0 ? ' active' : ''}" data-filter="${escapeHtml(c)}">${escapeHtml(c)}</button>`)
     .join('\n    ');
+  // 按年份分组（posts 已按日期倒序）
+  const byYear = new Map();
+  for (const p of posts) {
+    const y = p.date.slice(0, 4);
+    if (!byYear.has(y)) byYear.set(y, []);
+    byYear.get(y).push(p);
+  }
+  const groups = [...byYear.entries()].map(([year, list]) => `
+<section class="year-group">
+  <h2 class="year-label">${year}</h2>
+  <ul class="post-list">
+    ${list.map((p) => postListItem(p)).join('\n')}
+  </ul>
+</section>`).join('\n');
   const body = `<h1 class="page-title">全部文章</h1>
 <div class="filters" role="group" aria-label="分类筛选">
     ${filters}
 </div>
-<ul class="post-list" id="archive-list">
-  ${posts.map((p) => postListItem(p)).join('\n')}
-</ul>`;
+<div id="archive-list">
+  ${groups}
+</div>`;
   const js = `<script>
 (function () {
   var btns = document.querySelectorAll('.filter-btn');
   var items = document.querySelectorAll('#archive-list .post-item');
+  var groups = document.querySelectorAll('#archive-list .year-group');
   btns.forEach(function (btn) {
     btn.addEventListener('click', function () {
       btns.forEach(function (b) { b.classList.remove('active'); });
@@ -222,6 +241,13 @@ function buildArchives(posts) {
       var f = btn.getAttribute('data-filter');
       items.forEach(function (it) {
         it.hidden = (f !== '全部') && it.getAttribute('data-category') !== f;
+      });
+      groups.forEach(function (g) {
+        var visible = Array.prototype.some.call(
+          g.querySelectorAll('.post-item'),
+          function (it) { return !it.hidden; }
+        );
+        g.hidden = !visible;
       });
     });
   });
@@ -325,4 +351,7 @@ function main() {
   for (const p of posts) console.log(`  · ${p.date} [${p.category}] ${p.title} → posts/${p.slug}.html`);
 }
 
-main();
+// 直接运行时构建；被 admin.js require 时只导出函数不执行
+if (require.main === module) main();
+
+module.exports = { CATEGORIES, CATEGORY_CLASS, SITE, parseFrontmatter, renderMarkdown, main };

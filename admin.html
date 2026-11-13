@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>林间 · 录入后台</title>
+<style>
+  :root {
+    --bg: #ffffff; --surface: #f6f6f6; --text: rgb(30,30,32);
+    --soft: rgb(108,108,108); --faint: rgb(160,160,160);
+    --line: rgb(235,235,238); --ok: rgb(32,120,80); --err: rgb(170,50,50);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6;
+    display: flex; min-height: 100vh;
+  }
+
+  /* 左栏：文章列表 */
+  aside {
+    width: 250px; flex-shrink: 0; border-right: 1px solid var(--line);
+    padding: 1.2rem; overflow-y: auto; height: 100vh; position: sticky; top: 0;
+  }
+  aside h1 { font-size: 1.05rem; margin-bottom: 0.2rem; }
+  aside .sub { color: var(--faint); font-size: 12px; margin-bottom: 1rem; }
+  aside .sub a { color: var(--soft); }
+  #post-list { list-style: none; }
+  #post-list li {
+    padding: 0.5rem 0.6rem; border-radius: 6px; cursor: pointer;
+    font-size: 13px; margin-bottom: 2px;
+  }
+  #post-list li:hover { background: var(--surface); }
+  #post-list li.active { background: var(--surface); font-weight: 600; }
+  #post-list li .d { color: var(--faint); font-size: 11px; margin-right: 0.5em; font-family: Menlo, monospace; }
+  #btn-new {
+    width: 100%; margin-top: 1rem; padding: 0.45em; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 6px; background: transparent;
+    color: var(--soft); font-size: 13px;
+  }
+  #btn-new:hover { border-color: var(--faint); color: var(--text); }
+
+  /* 右侧：编辑区 */
+  main { flex: 1; padding: 1.6rem 2.2rem 3rem; max-width: 900px; }
+  .fields { display: flex; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .fields input, .fields select {
+    padding: 0.5em 0.7em; border: 1px solid var(--line); border-radius: 6px;
+    font-size: 14px; background: var(--bg); color: var(--text); font-family: inherit;
+  }
+  #f-title { flex: 1; min-width: 240px; font-weight: 600; }
+  label { font-size: 12px; color: var(--soft); display: block; margin-bottom: 0.25em; }
+
+  #f-body {
+    width: 100%; height: 55vh; padding: 0.9em 1em;
+    border: 1px solid var(--line); border-radius: 8px; resize: vertical;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 13.5px; line-height: 1.7;
+    background: var(--bg); color: var(--text);
+  }
+  #f-body:focus, .fields input:focus, .fields select:focus { outline: none; border-color: var(--faint); }
+
+  .toolbar { display: flex; align-items: center; gap: 0.7rem; margin: 0.9rem 0 0.4rem; flex-wrap: wrap; }
+  button.act {
+    padding: 0.45em 1.3em; border-radius: 6px; cursor: pointer; font-size: 14px;
+    border: 1px solid var(--line); background: transparent; color: var(--text);
+  }
+  button.act:hover { border-color: var(--faint); }
+  button.primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+  button.primary:hover { opacity: 0.85; }
+  .hint { color: var(--faint); font-size: 12px; }
+  #status { font-size: 13px; min-height: 1.4em; white-space: pre-wrap; }
+  #status.ok { color: var(--ok); }
+  #status.err { color: var(--err); }
+
+  /* 预览 */
+  #preview {
+    display: none; border: 1px solid var(--line); border-radius: 8px;
+    padding: 1.4em 1.6em; margin-top: 0.8rem; overflow-y: auto; max-height: 55vh;
+  }
+  #preview.show { display: block; }
+  #preview h1, #preview h2, #preview h3 { margin: 1.2em 0 0.5em; }
+  #preview p { margin-bottom: 1em; }
+  #preview blockquote { border-left: 3px solid var(--faint); padding-left: 1em; color: var(--soft); margin: 1em 0; }
+  #preview pre { background: var(--surface); padding: 0.9em 1em; border-radius: 6px; overflow-x: auto; }
+  #preview img { max-width: 100%; }
+
+  @media (max-width: 720px) {
+    body { flex-direction: column; }
+    aside { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--line); }
+    main { padding: 1.2rem 1.2rem 3rem; }
+  }
+</style>
+</head>
+<body>
+<aside>
+  <h1>林间 · 录入后台</h1>
+  <div class="sub">写完点「保存发布」，网站自动更新<br><a href="index.html" target="_blank">查看网站 →</a></div>
+  <ul id="post-list"></ul>
+  <button id="btn-new">＋ 写新文章</button>
+</aside>
+<main>
+  <div class="fields">
+    <div style="flex:1;min-width:240px">
+      <label>标题</label>
+      <input id="f-title" type="text" placeholder="文章标题">
+    </div>
+    <div>
+      <label>日期</label>
+      <input id="f-date" type="date">
+    </div>
+    <div>
+      <label>分类</label>
+      <select id="f-cat"></select>
+    </div>
+  </div>
+  <label>正文（支持 Markdown：## 小标题、**加粗**、> 引用、``` 代码块）</label>
+  <textarea id="f-body" placeholder="在这里写正文……"></textarea>
+  <div class="toolbar">
+    <button class="act primary" id="btn-save">保存发布</button>
+    <button class="act" id="btn-img">插入图片</button>
+    <button class="act" id="btn-preview">预览</button>
+    <input type="file" id="f-img" accept="image/*" hidden>
+    <span class="hint">编辑旧文章：点左侧列表调出，改完再点「保存发布」</span>
+  </div>
+  <div id="status"></div>
+  <div id="preview"></div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let currentFile = '';   // 空 = 新文章；有值 = 编辑旧文章
+let meta = { categories: [], posts: [] };
+
+function setStatus(msg, cls) {
+  $('status').textContent = msg;
+  $('status').className = cls || '';
+}
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+
+async function loadMeta() {
+  meta = await api('/api/meta');
+  $('f-cat').innerHTML = meta.categories
+    .map((c) => `<option>${c}</option>`).join('');
+  renderList();
+}
+
+function renderList() {
+  $('post-list').innerHTML = meta.posts.map((p) =>
+    `<li data-file="${p.file}" class="${p.file === currentFile ? 'active' : ''}">
+       <span class="d">${p.date}</span>${p.title}</li>`).join('');
+}
+
+// 列表点击 → 调出文章
+$('post-list').addEventListener('click', async (e) => {
+  const li = e.target.closest('li');
+  if (!li) return;
+  try {
+    const { file, raw } = await api('/api/post?file=' + encodeURIComponent(li.dataset.file));
+    const m = raw.match(/^---\n([\s\S]*?)\n---\n\n?([\s\S]*)$/);
+    const fm = {};
+    m[1].split('\n').forEach((l) => { const kv = l.match(/^(\w+)\s*:\s*(.*)$/); if (kv) fm[kv[1]] = kv[2]; });
+    currentFile = file;
+    $('f-title').value = fm.title || '';
+    $('f-date').value = fm.date || '';
+    $('f-cat').value = fm.category || meta.categories[0];
+    $('f-body').value = m[2];
+    renderList();
+    setStatus(`已调出《${fm.title}》，改完点「保存发布」覆盖原文`, 'ok');
+  } catch (err) { setStatus(err.message, 'err'); }
+});
+
+// 新建
+$('btn-new').addEventListener('click', () => {
+  currentFile = '';
+  $('f-title').value = '';
+  $('f-date').value = new Date().toISOString().slice(0, 10);
+  $('f-cat').value = meta.categories[0];
+  $('f-body').value = '';
+  renderList();
+  setStatus('新文章：写完点「保存发布」');
+});
+
+// 保存发布
+$('btn-save').addEventListener('click', async () => {
+  try {
+    const r = await api('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        file: currentFile || undefined,
+        title: $('f-title').value,
+        date: $('f-date').value,
+        category: $('f-cat').value,
+        body: $('f-body').value,
+      }),
+    });
+    currentFile = r.file;
+    await loadMeta();
+    renderList();
+    setStatus(`✅ 已发布《${$('f-title').value}》并重建网站。去网站刷新看看吧。`, 'ok');
+  } catch (err) { setStatus('❌ ' + err.message, 'err'); }
+});
+
+// 预览
+$('btn-preview').addEventListener('click', async () => {
+  const pv = $('preview');
+  if (pv.classList.contains('show')) { pv.classList.remove('show'); return; }
+  try {
+    const { html } = await api('/api/preview', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ body: $('f-body').value }),
+    });
+    pv.innerHTML = html;
+    pv.classList.add('show');
+  } catch (err) { setStatus('❌ ' + err.message, 'err'); }
+});
+
+// 插入图片
+$('btn-img').addEventListener('click', () => $('f-img').click());
+$('f-img').addEventListener('change', async () => {
+  const f = $('f-img').files[0];
+  if (!f) return;
+  setStatus('正在上传图片…');
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const r = await api('/api/upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: f.name, data: reader.result }),
+      });
+      const ta = $('f-body');
+      const pos = ta.selectionStart || ta.value.length;
+      ta.value = ta.value.slice(0, pos) + '\n' + r.snippet + '\n' + ta.value.slice(pos);
+      setStatus(`✅ 图片已插入（可把「图注」二字改成说明文字）`, 'ok');
+    } catch (err) { setStatus('❌ ' + err.message, 'err'); }
+  };
+  reader.readAsDataURL(f);
+});
+
+// 初始化
+$('f-date').value = new Date().toISOString().slice(0, 10);
+loadMeta().catch((e) => setStatus('❌ ' + e.message, 'err'));
+</script>
+</body>
+</html>
